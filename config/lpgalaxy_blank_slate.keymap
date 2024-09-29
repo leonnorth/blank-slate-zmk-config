@@ -11,13 +11,14 @@
 
 #define QWERTY_BASE 1
 
-#define TBLE_ORTHO   1
-// #define TBLE_MIT     1
+// #define TBLE_ORTHO   1
+#define TBLE_MIT     1
 // #define TBLE_DUAL_2U 1
 
 #define NAV_L 1
 #define NUM_L 2
-#define SYM_L 3
+#define UMLAUTE_L 3
+#define UMLAUTE_UPPER_L 4
 
 // Using layer taps on thumbs, having quick tap as well helps w/ repeating space/backspace
 &lt { quick_tap_ms = <200>; };
@@ -37,11 +38,69 @@
     };
 
     macros {
-      ZMK_MACRO(thumbs_up,
-		wait-ms = <1>;
-		tap-ms = <5>;
-                bindings = <&kp PLUS &kp COLON &kp PLUS &kp N1 &kp COLON &kp RET>;
-		)
+	sz: sz {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LALT>
+                , <&macro_tap &kp KP_N0 &kp KP_N2 &kp KP_N2 &kp KP_N3>
+                , <&macro_release &kp LALT>
+                ;
+        };
+	ae_lower: a_umlaute_lower {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LALT>
+                , <&macro_tap &kp KP_N0 &kp KP_N2 &kp KP_N2 &kp KP_N8>
+                , <&macro_release &kp LALT>
+                ;
+        };
+	oe_lower: o_umlaute_lower {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LALT>
+                , <&macro_tap &kp KP_N0 &kp KP_N2 &kp KP_N4 &kp KP_N6>
+                , <&macro_release &kp LALT>
+                ;
+        };
+	ue_lower: u_umlaute_lower {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LALT>
+                , <&macro_tap &kp KP_N0 &kp KP_N2 &kp KP_N5 &kp KP_N2>
+                , <&macro_release &kp LALT>
+                ;
+        };
+	ae_upper: a_umlaute_upper {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LALT>
+                , <&macro_tap &kp KP_N0 &kp KP_N1 &kp KP_N9 &kp KP_N6>
+                , <&macro_release &kp LALT>
+                ;
+        };
+	oe_upper: o_umluate_upper {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LALT>
+                , <&macro_tap &kp KP_N0 &kp KP_N2 &kp KP_N1 &kp KP_N4>
+                , <&macro_release &kp LALT>
+                ;
+        };
+	ue_upper: u_umlaute_upper {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings
+                = <&macro_press &kp LALT>
+                , <&macro_tap &kp KP_N0 &kp KP_N2 &kp KP_N2 &kp KP_N0>
+                , <&macro_release &kp LALT>
+                ;
+        };
     };
     
     tap_dances {
@@ -52,6 +111,16 @@
 		tapping-term-ms = <150>;
 		bindings = <&kp LSHFT>, <&caps_word>;
 	};
+    };
+
+    behaviors {
+        hold_tap_shft_ret: hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HOLD_TAP";
+            bindings = <&kp>, <&kp>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+        };
     };
 
 // Conditional layer only when we have less thumb keys
@@ -71,74 +140,53 @@
         base_layer {
             label = "Base";
             bindings = <
-#ifdef QWERTY_BASE
- &kp ESC    &kp Q      &kp W      &kp E       &kp R          &kp T          &kp Y            &kp U          &kp I       &kp O      &kp P         &kp BKSP
- &kp TAB    &kp A      &kp S      &kp D       &kp F          &kp G          &kp H            &kp J          &kp K       &kp L      &kp SEMI      &kp QUOT
- &kp LSHFT  &kp Z      &kp X      &kp C       &kp V          &kp B          &kp N            &kp M          &kp COMMA   &kp DOT    &kp FSLH      &kp RET
-#else
- &kp ESC    &kp Q      &kp W      &kp F       &kp P          &kp B          &kp J            &kp L          &kp U       &kp Y      &kp QUOT      &kp BKSP
- &kp TAB    &kp A      &kp R      &kp S       &kp T          &kp G          &kp M            &kp N          &kp E       &kp I      &kp O         &kp QUOT
- &kp LSHFT  &kp Z      &kp X      &kp C       &kp D          &kp V          &kp K            &kp H          &kp COMMA   &kp DOT    &kp SEMI      &kp RET
-#endif
-#ifdef TBLE_DUAL_2U
- &kp LCTRL  &kp LGUI   &kp LALT   &mo NAV_L         &shifty                        &kp SPACE                &mo NUM_L   &kp LALT   &kp RGUI      &kp RSHIFT
-#elif defined(TBLE_MIT)
- &kp LCTRL  &mo SYM_L   &kp LGUI  &kp LALT    &mo NAV_L          &kp SPACE                   &mo NUM_L      &kp LEFT    &kp UP     &kp DOWN      &kp RIGHT
-#else
- &kp LCTRL  &mo SYM_L   &kp LGUI  &kp LALT    &mo NAV_L      &kp SPACE      &kp RET          &mo NUM_L      &kp LEFT    &kp UP     &kp DOWN      &kp RIGHT
-#endif
+ &kp TAB    &kp Q      &kp W      &kp E         &kp R          &kp T          &kp Y            &kp U          &kp I       &kp O      &kp P         &kp BKSP
+ &kp ESC    &kp A      &kp S      &kp D         &kp F          &kp G          &kp H            &kp J          &kp K       &kp L      &kp SEMI      &kp QUOT
+ &kp LSHFT  &kp Z      &kp X      &kp C         &kp V          &kp B          &kp N            &kp M          &kp COMMA   &kp DOT    &kp FSLH      &hold_tap_shft_ret RSHFT RET
+ &kp LCTRL  &kp LGUI   &kp LALT   &mo UMLAUTE_L &mo NAV_L          &kp SPACE                   &mo NUM_L      &kp LEFT    &kp DOWN   &kp UP        &kp RIGHT
             >;
         };
 
         nav_layer {
             label = "Nav";
             bindings = <
-&bt BT_CLR &trans     &trans     &trans      &trans          &trans       &trans     &trans         &trans      &trans     &trans     &kp DEL
-&trans     &trans     &trans     &trans      &trans          &trans       &trans     &kp LEFT       &kp DOWN    &kp UP     &kp RIGHT  &trans
-&trans     &bt BT(0)  &bt BT(1)  &bt BT(2)   &bt BT(3)       &bt BT(4)    &trans     &kp HOME       &kp PG_DN   &kp PG_UP  &kp END    &trans
-#ifdef TBLE_DUAL_2U
-&trans  &trans        &trans     &trans              &trans                    &trans       &trans         &trans &trans &trans
-#elif defined(TBLE_MIT)
-&trans  &trans        &trans     &trans      &trans                &trans             &trans      &trans   &trans &trans &trans
-#else
-&trans  &trans        &trans     &trans      &trans          &trans       &trans    &trans  &trans         &trans &trans &trans
-#endif
+&kp TILDE  &kp EXCLAMATION  &kp AT_SIGN  &kp HASH   &kp DOLLAR  &kp PERCENT  &kp CARET  &kp AMPERSAND   &kp ASTERISK    &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp DEL
+&kp F1     &kp F2           &kp F3       &kp F4     &kp F5      &kp F6       &trans     &kp UNDERSCORE  &kp PLUS        &kp LEFT_BRACE        &kp RIGHT_BRACE        &kp PIPE
+&kp F7     &kp F8           &kp F9       &kp F10    &kp F11     &kp F12      &trans     &trans          &trans          &kp LEFT_BRACKET      &kp RIGHT_BRACKET      &trans
+&trans     &trans           &trans       &trans     &trans           &trans             &trans          &kp C_PREVIOUS  &kp C_VOLUME_DOWN     &kp C_VOLUME_UP        &kp C_PLAY_PAUSE
             >;
         };
 
         num_layer {
             label = "Num";
             bindings = <
-&trans     &kp LBKT   &trans &trans &trans    &kp RBKT    &kp C_PREV    &kp N7     &kp N8      &kp N9       &trans     &trans
-&trans     &kp MINUS  &trans &trans &trans    &kp EQUAL   &kp C_NEXT    &kp N4     &kp N5      &kp N6       &trans     &trans
-&trans     &kp GRAVE  &trans &trans &trans    &kp BSLH    &trans        &kp N1     &kp N2      &kp N3       &trans     &trans
-#ifdef TBLE_DUAL_2U
-&trans  &trans       &trans     &kp N0              &trans                 &trans            &trans         &trans &trans &trans
-#elif defined(TBLE_MIT)
-&trans  &trans       &trans     &kp N0      &trans           &none            &trans        &kp DEL      &trans &trans &trans
-#else
-&trans  &trans       &trans     &kp N0      &trans    &none         &none     &kp ESC        &kp DEL      &trans &trans &trans
-#endif
+&kp GRAVE  &kp N1     &kp N2   &kp N3  &kp N4    &kp N5     &kp N6      &kp N7     &kp N8      &kp N9            &kp N0             &kp DEL
+&trans     &trans     &trans   &trans  &trans    &trans     &trans      &kp MINUS  &kp EQUAL   &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &trans
+&trans     &trans     &trans   &trans  &trans    &trans     &trans      &trans     &trans      &trans            &trans             &trans
+&trans     &trans     &trans   &trans  &trans           &trans          &trans     &kp HOME    &kp PG_DN         &kp PG_UP          &kp END
             >;
         };
 
-        sym_layer {
-            label = "Sym";
+        umlaute_layer {
+            label = "Umlaute";
             bindings = <
-&trans     &kp LBRC   &kp AMPS   &kp STAR    &kp LPAR     &kp RBRC     &trans     &trans    &trans       &trans       &trans     &bootloader
-&trans     &kp COLON  &kp DLLR   &kp PRCNT   &kp CARET    &kp PLUS     &trans     &trans    &trans       &trans       &trans     &trans
-&trans     &kp TILDE  &kp EXCL   &kp AT      &kp HASH     &kp PIPE     &trans     &trans    &trans       &trans       &trans     &trans
-#ifdef TBLE_DUAL_2U
-&trans &trans        &trans     &kp RPAR                &trans                    &trans       &trans         &trans &trans &trans
-#elif defined(TBLE_MIT)
-&trans &trans        &trans     &kp RPAR        &trans                &trans             &trans      &trans   &trans &trans &trans
-#else
-&trans &trans        &trans     &kp RPAR        &trans          &trans       &trans    &trans  &trans         &trans &trans &trans
-#endif
+&trans              &trans     &trans    &trans    &trans    &trans    &trans    &ue_lower  &trans    &oe_lower  &trans    &trans
+&trans              &ae_lower  &sz       &trans    &trans    &trans    &trans    &trans     &trans    &trans     &trans    &trans
+&mo UMLAUTE_UPPER_L &trans     &trans    &trans    &trans    &trans    &trans    &trans     &trans    &trans     &trans    &mo UMLAUTE_UPPER_L
+&trans              &trans     &trans    &trans    &trans         &trans         &trans     &trans    &trans     &trans    &trans
+            >;
+        };
+
+        umlaute_upper_layer {
+            label = "Umlaute_upper";
+            bindings = <
+&trans    &trans     &trans    &trans    &trans    &trans    &trans    &ue_upper  &trans    &oe_upper  &trans    &trans
+&trans    &ae_upper  &sz       &trans    &trans    &trans    &trans    &trans     &trans    &trans     &trans    &trans
+&trans    &trans     &trans    &trans    &trans    &trans    &trans    &trans     &trans    &trans     &trans    &trans
+&trans    &trans     &trans    &trans    &trans         &bt BT_CLR     &bt BT(0)  &bt BT(1) &bt BT(2)  &bt BT(3) &bt BT(4)
             >;
         };
 
 
     };
 };
-
